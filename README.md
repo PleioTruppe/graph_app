@@ -16,7 +16,7 @@ yarn 3 is used as package manager, such that you can simply install the frontend
 The application has many package.json scripts available, with one of them being `yarn start`. This will start the webpack dev-server.
 
 ### React Flow
-React flow is being used for graph visualization. To install the package run 'yarn add reactflow'.
+React flow is being used for graph visualization. To install the package run `yarn add reactflow`.
 
 ## Backend
 
