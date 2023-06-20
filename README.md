@@ -15,6 +15,9 @@ yarn 3 is used as package manager, such that you can simply install the frontend
 
 The application has many package.json scripts available, with one of them being `yarn start`. This will start the webpack dev-server.
 
+### React Flow
+React flow is being used for graph visualization. To install the package run 'yarn add reactflow'.
+
 ## Backend
 
 The backend is a FastAPI server managed via [visyn_core](https://github.com/datavisyn/visyn_core). All relevant scripts can be found in the Makefile.
