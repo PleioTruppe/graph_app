@@ -32,6 +32,14 @@ python -m venv .venv  # create a new virtual environment
 make develop  # install all dependencies
 ```
 
+#### Additional packages
+
+It is required to install the following additional packages:
+
+```bash
+pip install networkx
+```
+
 ### Development
 
 To start the development server, simply run `make start` which will execute a uvicorn runner.
