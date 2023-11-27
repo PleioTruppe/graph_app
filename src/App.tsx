@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useAutocomplete } from './store/store';
 import { GeneGraph } from './GeneGraph';
 import MolViewer from './MolViewer';
+// import Molstar from './Molstar';
 
 export function App() {
   const [search, setSearch] = useState('');
@@ -22,6 +23,7 @@ export function App() {
 
       <GeneGraph geneID={search} />
       <MolViewer />
+      {/* <Molstar pdbId='1LOL'/> */}
     </>
   );
 }
