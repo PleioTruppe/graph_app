@@ -20,6 +20,8 @@ export function SidebarFilterList() {
 
     const handleOptionChange = (e) => {
 
+        console.log(nodes)
+
         const currentlyHandledType = e.target.id === "boxGenesFilter" ? "gene"
                                         : e.target.id === "boxDiseasesFilter" ? "disease"
                                         : e.target.id === "boxDrugsFilter" ? "drug"
@@ -28,11 +30,12 @@ export function SidebarFilterList() {
         const nodeList = []
 
         nodes.forEach(node => {
-            if (node.type === currentlyHandledType) {
+            if (node.data.type === currentlyHandledType) {
                 nodeList.push(node)
             }
-            
         });
+
+        console.log(nodeList)
 
         if (e.target.id === "boxGenesFilter") {
             setGenesShown(!genesShown)
