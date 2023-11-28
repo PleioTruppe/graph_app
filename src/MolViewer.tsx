@@ -7,61 +7,55 @@ interface MolViewerProps {
 
 const MolViewer: React.FC<MolViewerProps> = ({ options }) => {
   const viewerRef = useRef<Viewer | null>(null);
-  const isMountedRef = useRef(true);
+  const isMountedRef = useRef(false);
 
   const loadPdbFile = useCallback(async (pdbFileName: string) => {
-    try {
-      const pdbFilePath = require(`./${pdbFileName}`);
-  
-      console.log('Loading PDB file:', pdbFilePath);
-      // loading pdb-File into viewer
-      await viewerRef.current?.loadPdb(pdbFilePath);
+    if (isMountedRef.current) {
+      try {
+        const pdbFilePath = require(`./${pdbFileName}`);
+    
+        console.log('Loading PDB file:', pdbFilePath);
+        await viewerRef.current?.loadPdb(pdbFilePath);
 
-      if (isMountedRef.current) {
         console.log('PDB file loaded successfully');
-      }
-    } catch (error) {
-      if (isMountedRef.current) {
-        console.error('Error loading PDB file:', error);
-      }
-    }
+
+      } catch (error) {
+          console.error('Error loading PDB file:', error);
+      } 
+  }
   }, []);
 
   useEffect(() => {
-    const initViewer = async () => {
-      try {
-        // initializing the viewer
-        const viewer = await Viewer.create('mol-container', options);
-        viewerRef.current = viewer;
 
-        if (isMountedRef.current) {
+    isMountedRef.current = true;
+
+    const initViewer = async () => {
+      if (isMountedRef.current) {
+        try {
+          const viewer = await Viewer.create('mol-container', options);
+          viewerRef.current = viewer;
+
           console.log('Viewer created successfully');
           console.log('Plugin builders:', viewerRef.current.plugin.builders);
-        }
 
-        if (viewerRef.current) {
-          await viewerRef.current.plugin.builders.structure.createModel();
+          if (viewerRef.current && isMountedRef.current) {
+            await viewerRef.current.plugin.builders.structure;
 
-          if (viewerRef.current.plugin.builders.structure) {
-              // loading pdb-File
+            if (viewerRef.current.plugin.builders.structure  && isMountedRef.current) {
               await loadPdbFile('AF-Q9H2S6-F1-model_v4.pdb');
+            }
+          } else {
+              console.error('Error: Viewer not successfully initialized.');
           }
-        } else {
-          if (isMountedRef.current) {
-            console.error('Error: Viewer not successfully initialized.');
-          }
+        } catch (error) {
+            console.error('Error initializing viewer:', error);
         }
-      } catch (error) {
-        if (isMountedRef.current) {
-          console.error('Error initializing viewer:', error);
-        }
-      }
+    }
     };
 
     initViewer();
 
     return () => {
-      // Cleanup function
       isMountedRef.current = false;
     };
   }, [options, loadPdbFile]);
