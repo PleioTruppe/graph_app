@@ -1,11 +1,14 @@
-import { Tabs, Text, Button, HoverCard, Flex, Space, ScrollArea } from '@mantine/core';
+import { Tabs, Text, Button, HoverCard, Flex, Space, ScrollArea, } from '@mantine/core';
 import React, { useState } from "react"
 import { Handle, Position, useNodeId, useReactFlow } from "reactflow";
 import { useGetTraitInfo } from './store/store';
 import { useEffect } from 'react';
-import { IconInfoCircle, IconReportSearch, IconTopologyFull, IconSearch } from '@tabler/icons-react';
+//import { IconInfoCircle, IconReportSearch, IconTopologyFull, IconSearch } from '@tabler/icons-react';
 import { onNodesVisibilityChange } from './onNodesVisibilityChange';
-
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import PlagiarismOutlinedIcon from '@mui/icons-material/PlagiarismOutlined';
+import InsightsIcon from '@mui/icons-material/Insights';
+import SearchIcon from '@mui/icons-material/Search';
 
 var color = {   
     "gene": "#4BB268",
@@ -73,7 +76,7 @@ function DefaultCustomNode({ data }) {
                     <Handle type="source" position={Position.Top} style={{ visibility: "hidden" }} />
                     {label}
                     <Handle type="target" position={Position.Right} style={{ visibility: "hidden" }} />
-                    {data?.isRoot && <div style={symbolStyle}> <IconSearch size={24} style={{fill:'rgba(255, 255, 255, 0.8)'}}/></div>}
+                    {data?.isRoot && <div style={symbolStyle}> <SearchIcon style={{fill:'rgba(255, 255, 255, 0.8)'}}/></div>}
                 </div>
             </HoverCard.Target>
             <HoverCard.Dropdown>
@@ -84,9 +87,9 @@ function DefaultCustomNode({ data }) {
                 <Space h="md" />
                 <Tabs color="gray" variant="outline" defaultValue="details">
                     <Tabs.List>
-                        <Tabs.Tab rightSection={<IconInfoCircle />} value="details" > Details</Tabs.Tab>
-                        {data?.displayProps.summary != "nan" ? <Tabs.Tab rightSection={<IconReportSearch />} value="summary">Summary</Tabs.Tab> : <></>}
-                        <Tabs.Tab rightSection={<IconTopologyFull />} value="structure">Structure</Tabs.Tab>
+                        <Tabs.Tab rightSection={<InfoOutlinedIcon />} value="details" > Details</Tabs.Tab>
+                        {data?.displayProps.summary != "nan" ? <Tabs.Tab rightSection={<PlagiarismOutlinedIcon />} value="summary">Summary</Tabs.Tab> : <></>}
+                        <Tabs.Tab rightSection={<InsightsIcon />} value="structure">Structure</Tabs.Tab>
                     </Tabs.List>
                     <Tabs.Panel value="details" >
                         <ScrollArea>
