@@ -56,7 +56,7 @@
     "cytoscape": "^3.25.0",
     "d3": "^7.8.5",
     "dagre": "^0.8.5",
-    "molstar": "^3.42.0",
+    "molstar": "3.13.0",
     "molstar-react": "^0.5.2",
     "react-redux": "^8.0.2",
     "reactflow": "^11.7.2",

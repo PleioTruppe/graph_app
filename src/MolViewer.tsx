@@ -3,54 +3,78 @@ import { Viewer, ViewerOptions } from 'molstar/build/viewer/molstar';
 
 interface MolViewerProps {
   options?: Partial<ViewerOptions>;
+  entrez_id?: string;
 }
 
-const MolViewer: React.FC<MolViewerProps> = ({ options }) => {
+function MolViewer({ options, entrez_id }: MolViewerProps) {
   const viewerRef = useRef<Viewer | null>(null);
   const isMountedRef = useRef(false);
 
-  const loadPdbFile = useCallback(async (pdbFileName: string) => {
-    if (isMountedRef.current) {
-      try {
-        const pdbFilePath = require(`./${pdbFileName}`);
-    
-        console.log('Loading PDB file:', pdbFilePath);
-        await viewerRef.current?.loadPdb(pdbFilePath);
-
-        console.log('PDB file loaded successfully');
-
-      } catch (error) {
-          console.error('Error loading PDB file:', error);
-      } 
-  }
+  const fetchUniProtId = useCallback(async (entrezId: string) => {
+    try {
+      const response = await fetch(`https://mygene.info/v3/gene/${entrezId}?fields=uniprot&dotfield=false&size=10`);
+      const data = await response.json();
+      return data?.uniprot?.['Swiss-Prot'] || null;
+    } catch (error) {
+      console.error('Error fetching UniProt ID:', error);
+      return null;
+    }
   }, []);
 
-  useEffect(() => {
+  const fetchAlphaFoldData = useCallback(async (uniProtId: string | null) => {
+    try {
+      const response = await fetch(`https://alphafold.ebi.ac.uk/api/prediction/${uniProtId}?key=key`);
+      const data = await response.json();
+      return data?.[0]?.cifUrl || null;
+    } catch (error) {
+      console.error('Error fetching AlphaFold data:', error);
+      return null;
+    }
+  }, []);
 
+  const loadStructure = useCallback(async (cifUrl: string | null) => {
+    if (isMountedRef.current && cifUrl) {
+      try {
+        await viewerRef.current?.loadStructureFromUrl(cifUrl);
+        console.log('Structure loaded successfully');
+      } catch (error) {
+        console.error('Error loading structure:', error);
+      }
+    }
+  }, []);
+
+  useEffect(() => { 
     isMountedRef.current = true;
 
     const initViewer = async () => {
       if (isMountedRef.current) {
         try {
-          const viewer = await Viewer.create('mol-container', options);
-          viewerRef.current = viewer;
+          const molstarContainer = document.getElementById('mol-container');
 
-          console.log('Viewer created successfully');
-          console.log('Plugin builders:', viewerRef.current.plugin.builders);
+          if (molstarContainer && entrez_id) {
+            const uniProtId = await fetchUniProtId(entrez_id);
+            const cifUrl = await fetchAlphaFoldData(uniProtId);
+            
+            if (uniProtId && cifUrl) {
+              const viewer = await Viewer.create('mol-container', options);
+              viewerRef.current = viewer;
 
-          if (viewerRef.current && isMountedRef.current) {
-            await viewerRef.current.plugin.builders.structure;
+              if (viewer) {
+                console.log('Viewer created successfully');
+                console.log('Plugin builders:', viewerRef.current.builders);
 
-            if (viewerRef.current.plugin.builders.structure  && isMountedRef.current) {
-              await loadPdbFile('AF-Q9H2S6-F1-model_v4.pdb');
+                if (viewerRef.current.plugin.builders.structure) {
+                  await loadStructure(cifUrl);
+                }
+              } else {
+                console.error('Error creating viewer');
+              }
             }
-          } else {
-              console.error('Error: Viewer not successfully initialized.');
           }
         } catch (error) {
-            console.error('Error initializing viewer:', error);
+          console.error('Error initializing viewer:', error);
         }
-    }
+      }
     };
 
     initViewer();
@@ -58,9 +82,9 @@ const MolViewer: React.FC<MolViewerProps> = ({ options }) => {
     return () => {
       isMountedRef.current = false;
     };
-  }, [options, loadPdbFile]);
+  }, [options, entrez_id, fetchUniProtId, fetchAlphaFoldData, loadStructure]);
 
-  return <div id="mol-container" style={{ width: '250px', height: '250px' }} />;
-};
+  return <div id="mol-container" style={{ width: '100%', height: '100%' }} />;
+}
 
 export default MolViewer;

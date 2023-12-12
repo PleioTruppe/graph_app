@@ -5,7 +5,7 @@ interface MolStarViewerProps {
   pdbFilePath: string;
 }
 
-const MolStarViewer: React.FC<MolStarViewerProps> = ({ pdbFilePath }) => {
+const MolOptions: React.FC<MolStarViewerProps> = ({ pdbFilePath }) => {
   useEffect(() => {
     console.log("MolStarViewer is mounted with PDB file:", pdbFilePath);
     const viewerOptions = {
@@ -40,4 +40,4 @@ const MolStarViewer: React.FC<MolStarViewerProps> = ({ pdbFilePath }) => {
   return <div id="molstar-container" style={{ width: '100%', height: '500px' }} />;
 };
 
-export default MolStarViewer;
+export default MolOptions;
