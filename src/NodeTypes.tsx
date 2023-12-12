@@ -1,14 +1,15 @@
-import { Tabs, Text, Button, HoverCard, Flex, Space, ScrollArea, } from '@mantine/core';
+import { Tabs, Text, Button, HoverCard, Flex, Space, ScrollArea, Popover, Paper, Center, Group, useMantineTheme, } from '@mantine/core';
 import React, { useState } from "react"
-import { Handle, Position, useNodeId, useReactFlow } from "reactflow";
+import { Handle, Position, useNodeId, useReactFlow, NodeToolbar  } from "reactflow";
 import { useGetTraitInfo } from './store/store';
 import { useEffect } from 'react';
-//import { IconInfoCircle, IconReportSearch, IconTopologyFull, IconSearch } from '@tabler/icons-react';
 import { onNodesVisibilityChange } from './onNodesVisibilityChange';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import PlagiarismOutlinedIcon from '@mui/icons-material/PlagiarismOutlined';
 import InsightsIcon from '@mui/icons-material/Insights';
 import SearchIcon from '@mui/icons-material/Search';
+
+
 
 var color = {   
     "gene": "#4BB268",
@@ -69,17 +70,21 @@ function DefaultCustomNode({ data }) {
 
     const label = data?.isRoot ? <b>{data?.displayProps.label}</b> : data?.displayProps.label
 
+    const [referenceElement, setReferenceElement] = useState(null);
+    const [visible, setVisible] = useState(true);
+    const theme = useMantineTheme();
+    
     return (
-        <HoverCard shadow="md" width={'25vw'} withinPortal={true} >
-            <HoverCard.Target>
-                <div style={nodeStyle}>
+        <Popover shadow="md" width={380} withinPortal={true} withArrow position="bottom" clickOutsideEvents={['mouseup', 'touchend']}>
+            <Popover.Target>
+                <div style={nodeStyle} >
                     <Handle type="source" position={Position.Top} style={{ visibility: "hidden" }} />
                     {label}
                     <Handle type="target" position={Position.Right} style={{ visibility: "hidden" }} />
                     {data?.isRoot && <div style={symbolStyle}> <SearchIcon style={{fill:'rgba(255, 255, 255, 0.8)'}}/></div>}
                 </div>
-            </HoverCard.Target>
-            <HoverCard.Dropdown>
+            </Popover.Target>
+            <Popover.Dropdown>
                 <Flex justify="center" gap="md">
                     <Button variant="filled" color="gray" fullWidth onClick={onExpandCollapse}> {collapsed ? "Expand" : "Collapse"}</Button>
                     <Button variant="filled" color="gray" fullWidth onClick={() => onNodesVisibilityChange(reactflow, [nodes[nodeIndex]], !nodes[nodeIndex].hidden)}>Hide</Button>
@@ -135,8 +140,8 @@ function DefaultCustomNode({ data }) {
                         </div>
                     </Tabs.Panel>
                 </Tabs>
-            </HoverCard.Dropdown>
-        </HoverCard>
+            </Popover.Dropdown>
+        </Popover>
     );
 }
 

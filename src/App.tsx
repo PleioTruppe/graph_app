@@ -3,6 +3,7 @@ import { Autocomplete, Loader, MultiSelect } from '@mantine/core';
 import React, { useState } from 'react';
 import { useAutocomplete } from './store/store';
 import { GeneGraph } from './GeneGraph';
+import {PopoverTest} from './PopoverTest';
 
 export function App() {
   const [selectedValues, setSelectedValues] = useState([]);
@@ -43,6 +44,7 @@ export function App() {
       />
 
       <GeneGraph geneID={selectedIds} addID={setIds}/>
+      <PopoverTest/>
     </>
   );
 }
