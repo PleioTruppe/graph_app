@@ -45,24 +45,29 @@ function MolViewer({ options, entrez_id }: MolViewerProps) {
 
   useEffect(() => { 
     isMountedRef.current = true;
-
+  
     const initViewer = async () => {
       if (isMountedRef.current) {
         try {
           const molstarContainer = document.getElementById('mol-container');
-
+  
           if (molstarContainer && entrez_id) {
             const uniProtId = await fetchUniProtId(entrez_id);
             const cifUrl = await fetchAlphaFoldData(uniProtId);
             
             if (uniProtId && cifUrl) {
-              const viewer = await Viewer.create('mol-container', options);
+              const viewerOptions: Partial<ViewerOptions> = {
+                ...options,
+                layoutShowControls: false, // Set layoutShowControls to false
+              };
+  
+              const viewer = await Viewer.create('mol-container', viewerOptions);
               viewerRef.current = viewer;
-
+  
               if (viewer) {
                 console.log('Viewer created successfully');
                 console.log('Plugin builders:', viewerRef.current.builders);
-
+  
                 if (viewerRef.current.plugin.builders.structure) {
                   await loadStructure(cifUrl);
                 }
@@ -76,15 +81,15 @@ function MolViewer({ options, entrez_id }: MolViewerProps) {
         }
       }
     };
-
+  
     initViewer();
-
+  
     return () => {
       isMountedRef.current = false;
     };
   }, [options, entrez_id, fetchUniProtId, fetchAlphaFoldData, loadStructure]);
 
-  return <div id="mol-container" style={{ width: '100%', height: '100%' }} />;
+  return <div id="mol-container" style={{ width: '50px', height: '50px' }} />;
 }
 
 export default MolViewer;

@@ -22,7 +22,7 @@ export function App() {
 
       <GeneGraph geneID={search} /> */}
       {/* <MolViewer entrez_id={'64102'} /> */}
-      <MolViewer entrez_id={'63923'} />
+      <MolViewer entrez_id={'63923'} options={{ layoutShowControls: false }} />
       {/* <MolViewer entrez_id={'100128262'} /> */}
       {/* <MolViewer entrez_id={'23043'} /> */}
       {/* <MolViewer entrez_id={'ENSG00000000005'} /> */}
