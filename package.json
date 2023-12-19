@@ -67,6 +67,7 @@
     "react-icons": "^4.12.0",
     "react-redux": "^8.0.2",
     "reactflow": "^11.7.2",
+    "rxjs": "^7.8.1",
     "styled-components": "^6.1.1",
     "visyn_core": "2.0.0",
     "visyn_scripts": "4.0.0"
