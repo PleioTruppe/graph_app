@@ -6,6 +6,7 @@ import { nodeTypes } from "./NodeTypes";
 import FloatingEdge from './EdgeType';
 import FloatingConnectionLine from './FloatingConnectionLine';
 import { SidebarFilterList } from './SidebarFilterList';
+import { selectAll } from 'd3';
 
 export const NodesContext = React.createContext(null)
 
@@ -105,7 +106,17 @@ export function GeneGraph(props: GeneGraphProps) {
               onNodesChange={onNodesChange}
               onEdgesChange={onEdgesChange}
               connectionLineComponent={FloatingConnectionLine}
-              fitView 
+              fitView
+              onPaneClick={(event) => {
+                setTimeout(() => {
+                  setNodes((prevNodes) =>
+                    prevNodes.map((node) => ({
+                      ...node,
+                      selected: true,
+                    }))
+                  );
+                }, 0);
+              }}
             >
               <Background />
               <Controls />
