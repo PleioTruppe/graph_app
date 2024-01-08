@@ -31,13 +31,11 @@ const theme = createTheme({
 
 // component for sidebar with filter area and list of nodes
 export function SidebarFilterList() {
-
-
     // get state of nodes from parent component
     const reactflow = useReactFlow();
     const nodes = reactflow.getNodes();
-    const [nodesSelected, setNodesSelected] = useState(nodes.filter(node => node.selected));
 
+    const [nodesSelected, setNodesSelected] = useState(nodes.filter(node => node.selected));
     const [selectionNodes, setSelectionNodes] = useState(nodes.filter(node => node.selected));
 
     useOnSelectionChange({
@@ -51,7 +49,6 @@ export function SidebarFilterList() {
 
     const NodeTree = () => {
         const [nodes, setNodes] = useState(reactflow.getNodes());
-
 
         useEffect(() => {
             console.log("test")
@@ -73,7 +70,6 @@ export function SidebarFilterList() {
             });
 
             setNodes(updatedNodes);
-
             onNodesVisibilityChange(reactflow, updatedNodes.filter(node => node.data.type === newType), globalBool);
         };
 
@@ -116,7 +112,6 @@ export function SidebarFilterList() {
             if (selected.length > 0) {
                 onNodesSelectionChange(reactflow, selected)
             }
-
         }
 
         return (
@@ -127,7 +122,7 @@ export function SidebarFilterList() {
                     defaultExpandIcon={<ChevronRightIcon />}
                     selected={treeViewSelection}
                     onNodeSelect={handleNodeSelect}
-                // expanded={treeViewExpanded}
+                    // expanded={treeViewExpanded}
                 >
                     {
                         nodeLists.map((list, index) => {
@@ -157,7 +152,6 @@ export function SidebarFilterList() {
             </ThemeProvider>
         )
     }
-
 
     const scrollHeight = document.getElementById('card')?.clientHeight - 100
 
