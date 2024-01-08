@@ -53,10 +53,10 @@ export function SidebarFilterList() {
         const [nodes, setNodes] = useState(reactflow.getNodes());
 
 
-        // useEffect(() => {
-        //     console.log("test")
-        //     setNodes(reactflow.getNodes());
-        // }, [reactflow])
+        useEffect(() => {
+            console.log("test")
+            setNodes(reactflow.getNodes());
+        }, [reactflow])
 
         var globalBool = false;
 
