@@ -191,6 +191,20 @@ export function GeneGraph(props: GeneGraphProps) {
         onEdgesChange={onEdgesChange}
         connectionLineComponent={FloatingConnectionLine}
         fitView
+        onPaneClick={(event) => {
+          // Prevent default action
+          event.preventDefault();
+
+          // Set all nodes as selected using a Promise
+          Promise.resolve().then(() => {
+            setNodes((prevNodes) =>
+              prevNodes.map((node) => ({
+                ...node,
+                selected: true,
+              }))
+            );
+          });
+        }}
       >
         <Background />
         <Controls />
