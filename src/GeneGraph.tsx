@@ -128,6 +128,7 @@ export function GeneGraph(props: GeneGraphProps) {
               fullname: node.name,
               synonyms: node.synonyms,
               entrezId: node.entrezId,
+              ensemblId: node.symbol == "nan" ? node.symbol : node.id,
               label: node.symbol == "nan" ? node.id : node.symbol,
               summary: node.summary,
             },
