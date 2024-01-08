@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react'
 import { useReactFlow, useOnSelectionChange } from "reactflow";
-import { Card, ScrollArea, Group, Divider, MultiSelect } from "@mantine/core"
+import { Card, ScrollArea, Group, Divider, MultiSelect, Autocomplete } from "@mantine/core"
 import { onNodesVisibilityChange } from './onNodesVisibilityChange';
 import { TreeView } from '@mui/x-tree-view';
 import { TreeItem } from '@mui/x-tree-view';
@@ -50,16 +50,17 @@ export function SidebarFilterList() {
 
 
     const NodeTree = () => {
-        const [nodes, setNodes] = useState([]);
+        const [nodes, setNodes] = useState(reactflow.getNodes());
 
 
-        useEffect(() => {
-            setNodes(reactflow.getNodes());
-        }, [reactflow])
+        // useEffect(() => {
+        //     console.log("test")
+        //     setNodes(reactflow.getNodes());
+        // }, [reactflow])
 
         var globalBool = false;
 
-        // toogle tree Node Categorie -> call hide for all nodes in list
+        // toogle tree Node Category -> call hide for all nodes in list
         const toggleNodeCategory = (type) => {
             var newType = type.slice(0, -1);
 
@@ -71,14 +72,10 @@ export function SidebarFilterList() {
                 return node;
             });
 
-
             setNodes(updatedNodes);
 
             onNodesVisibilityChange(reactflow, updatedNodes.filter(node => node.data.type === newType), globalBool);
         };
-
-
-
 
         // toogle Hidden Nodes
         const toggleNodeVisibility = (nodeId) => {
@@ -98,9 +95,6 @@ export function SidebarFilterList() {
             onNodesVisibilityChange(reactflow, [updatedNode], currentHidden);
         };
 
-        // Übergeben Sie das gesamte Node-Objekt, nicht nur das Label
-
-        console.log(nodes)
         const geneNodeLabels = nodes.filter(node => node.data.type === 'gene');
         const diseaseNodeLabels = nodes.filter(node => node.data.type === 'disease');
         const drugNodeLabels = nodes.filter(node => node.data.type === 'drug');
@@ -165,13 +159,13 @@ export function SidebarFilterList() {
     }
 
 
-
-
-
     const scrollHeight = document.getElementById('card')?.clientHeight - 100
 
-    const handleSelectedChange = (values) => {
-        var selected = nodes.filter(node => values.includes(node.data?.label))
+    const handleSelectedChange = (value) => {
+        var selected = nodes.filter(node => node.data?.label.toLowerCase().includes(value.toLowerCase()))
+        // var selected = nodes.filter(node => values.includes(node.data?.label))
+        // console.log("Test")
+        console.log(selected)
         onNodesSelectionChange(reactflow, selected)
     }
 
@@ -180,13 +174,11 @@ export function SidebarFilterList() {
             <Card id='card' withBorder shadow='sm' radius="lg" style={{ height: '100%' }}>
                 <Group position="apart" style={{ padding: '6px 4px' }} >
                     <div>Nodes</div>
-                    <ScrollArea offsetScrollbars scrollbarSize={2}>
-                        <MultiSelect
+                    {/* <ScrollArea offsetScrollbars scrollbarSize={2}> */}
+                        <Autocomplete
                             data={nodes.map((node) => {
                                 return node.data?.label;
                             })}
-                            searchable
-                            clearable
                             onChange={handleSelectedChange}
                             placeholder="search node..."
                             nothingFound="No nodes found"
@@ -194,10 +186,9 @@ export function SidebarFilterList() {
                             variant='filled'
                             size='xs'
                             radius='xl'
-                            value={selectionNodes.map(node => node.data?.label)}
+                            // value={selectionNodes.map(node => node.data?.label)}
                         />
-                    </ScrollArea>
-
+                    {/* </ScrollArea> */}
                 </Group>
                 <Divider />
                 <ScrollArea h={scrollHeight} offsetScrollbars scrollbarSize={2}>
