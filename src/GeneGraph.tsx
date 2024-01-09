@@ -181,7 +181,7 @@ export function GeneGraph(props: GeneGraphProps) {
   }
 
   return (
-    <div style={{ height: '85vh', width: '100%', display: 'flex' }}>
+    <div style={{ height: '95%', width: '100%', display: 'flex' }}>
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -190,7 +190,6 @@ export function GeneGraph(props: GeneGraphProps) {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         connectionLineComponent={FloatingConnectionLine}
-        fitView
       >
         <Background />
         <Controls />

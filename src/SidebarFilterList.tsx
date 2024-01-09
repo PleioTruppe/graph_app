@@ -51,7 +51,6 @@ export function SidebarFilterList() {
         const [nodes, setNodes] = useState(reactflow.getNodes());
 
         useEffect(() => {
-            console.log("test")
             setNodes(reactflow.getNodes());
         }, [reactflow])
 
@@ -103,6 +102,8 @@ export function SidebarFilterList() {
 
         useEffect(() => {
             setTreeViewSelection(nodesSelected.map(node => node.data?.label))
+            // TODO
+            // setSearchValue(nodesSelected.map(node => node.data?.label).join(', '))
         }, [nodesSelected])
 
         const handleNodeSelect = (event, value) => {
@@ -122,7 +123,7 @@ export function SidebarFilterList() {
                     defaultExpandIcon={<ChevronRightIcon />}
                     selected={treeViewSelection}
                     onNodeSelect={handleNodeSelect}
-                    // expanded={treeViewExpanded}
+                // expanded={treeViewExpanded}
                 >
                     {
                         nodeLists.map((list, index) => {
@@ -158,30 +159,31 @@ export function SidebarFilterList() {
     const handleSelectedChange = (value) => {
         var selected = nodes.filter(node => node.data?.label.toLowerCase().includes(value.toLowerCase()))
         // var selected = nodes.filter(node => values.includes(node.data?.label))
-        // console.log("Test")
         console.log(selected)
         onNodesSelectionChange(reactflow, selected)
     }
 
+    // const [searchValue, setSearchValue] = useState('')
+
     return (
         <div style={{ width: '23%', padding: '10px' }}>
-            <Card id='card' withBorder shadow='sm' radius="lg" style={{ height: '100%' }}>
+            <Card id='card' withBorder shadow='sm' radius="lg" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                 <Group position="apart" style={{ padding: '6px 4px' }} >
                     <div>Nodes</div>
                     {/* <ScrollArea offsetScrollbars scrollbarSize={2}> */}
-                        <Autocomplete
-                            data={nodes.map((node) => {
-                                return node.data?.label;
-                            })}
-                            onChange={handleSelectedChange}
-                            placeholder="search node..."
-                            nothingFound="No nodes found"
-                            id='searchbarNodes'
-                            variant='filled'
-                            size='xs'
-                            radius='xl'
-                            // value={selectionNodes.map(node => node.data?.label)}
-                        />
+                    <Autocomplete
+                        data={nodes.map((node) => {
+                            return node.data?.label;
+                        })}
+                        onChange={handleSelectedChange}
+                        placeholder="search node..."
+                        nothingFound="No nodes found"
+                        id='searchbarNodes'
+                        variant='filled'
+                        size='xs'
+                        radius='xl'
+                        //value={searchValue}
+                    />
                     {/* </ScrollArea> */}
                 </Group>
                 <Divider />
