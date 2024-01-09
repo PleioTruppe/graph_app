@@ -26,6 +26,7 @@ export function App() {
   const handleChange = (values) => {
     setSearch(values);
   };
+
   const setIds = (ids: string[]) => {
     setSelectedIds(ids)
   }

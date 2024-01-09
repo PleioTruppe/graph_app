@@ -149,7 +149,6 @@ export function SidebarFilterList() {
                                             label={node.data.displayProps.label}
                                             endIcon={node.hidden ? <VisibilityOffIcon /> : <VisibilityIcon />}
                                             onClick={() => toggleNodeVisibility(node.id)}
-
                                         />
                                     })}
                                 </TreeItem>)
@@ -168,35 +167,35 @@ export function SidebarFilterList() {
         onNodesSelectionChange(reactflow, selected)
     }
 
-    return (
-        <div style={{ width: '23%', padding: '10px' }}>
-            <Card id='card' withBorder shadow='sm' radius="lg" style={{ height: '100%' }}>
-                <Group position="apart" style={{ padding: '6px 4px' }} >
-                    <div>Nodes</div>
-                    <ScrollArea offsetScrollbars scrollbarSize={2}>
-                        <MultiSelect
-                            data={nodes.map((node) => {
-                                return node.data?.label;
-                            })}
-                            searchable
-                            clearable
-                            onChange={handleSelectedChange}
-                            placeholder="search node..."
-                            nothingFound="No nodes found"
-                            id='searchbarNodes'
-                            variant='filled'
-                            size='xs'
-                            radius='xl'
-                            value={selectionNodes.map(node => node.data?.label)}
-                        />
-                    </ScrollArea>
+    const symbolListSearch = nodes.map((node) => { return node.data?.label; });
+    console.log(symbolListSearch)
 
-                </Group>
-                <Divider />
-                <ScrollArea h={scrollHeight} offsetScrollbars scrollbarSize={2}>
-                    <NodeTree />
-                </ScrollArea>
-            </Card>
-        </div>
+    return (
+<div style={{height:'100%', padding: '10px', position: 'relative', left: '0', top: '0', bottom: '0' }}>
+  <Card id='card' withBorder shadow='sm' radius="lg" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <Group position="apart" style={{ padding: '6px 4px', width: '100%' }}>
+      <div style={{overflow: 'auto', width: '100%'}}>
+
+        <MultiSelect
+          data={symbolListSearch || ["test"] }
+          searchable
+          clearable
+          onChange={handleSelectedChange}
+          placeholder="Search node..."
+          nothingFound="No nodes found"
+          id='searchbarNodes'
+          variant='filled'
+          value={selectionNodes.map(node => node.data?.label)}
+          style={{maxHeight: '2.5EM', height: '100%', zIndex: '100'}}
+        />
+
+      </div>
+    </Group>
+    <Divider />
+    <ScrollArea h={scrollHeight} offsetScrollbars scrollbarSize={2} style={{ flex: '1' }}>
+      <NodeTree />
+    </ScrollArea>
+  </Card>
+</div>
     );
 }

@@ -51,15 +51,6 @@ const useLayoutedElements = () => {
       });
 
       setNodes(children as any);
-
-      window.requestAnimationFrame(() => {
-        fitView({
-          maxZoom: 15,
-          minZoom: 0.1,
-          duration: 5000,
-          nodes: getNodes()
-        });
-      });
     });
   }, []);
 
@@ -74,6 +65,11 @@ export function GeneGraph(props: GeneGraphProps) {
   // state for the nodes and edges
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+
+  if (props?.geneID?.length == 0 && nodes?.length != 0) {
+    setNodes([]);
+  }
+
   let fixedIds = []
   if (nodes != undefined && nodes.length != 0) {
     // let fixedNodes = nodes.filter(node => node.data.children.length == 0 && node.data.parents.length == 0)
@@ -196,9 +192,11 @@ export function GeneGraph(props: GeneGraphProps) {
         <Controls />
         <MiniMap />
       </ReactFlow>
+      <div style={{maxWidth: '25%', minWidth:'25%'}}>
       <NodesContext.Provider value={{ nodes: nodes, setNodes: setNodes }}>
         <SidebarFilterList />
       </NodesContext.Provider>
+      </div>
     </div >
   );
 }
