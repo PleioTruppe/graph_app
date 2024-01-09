@@ -100,7 +100,6 @@ export function SidebarFilterList() {
 
         // Übergeben Sie das gesamte Node-Objekt, nicht nur das Label
 
-        console.log(nodes)
         const geneNodeLabels = nodes.filter(node => node.data.type === 'gene');
         const diseaseNodeLabels = nodes.filter(node => node.data.type === 'disease');
         const drugNodeLabels = nodes.filter(node => node.data.type === 'drug');
