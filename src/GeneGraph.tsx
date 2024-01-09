@@ -21,6 +21,7 @@ const edgeTypes = {
 type GeneGraphProps = {
   geneID: string[]; // changed to array
   setIds;
+  toggleLoading;
 };
 
 
@@ -95,7 +96,8 @@ export function GeneGraph(props: GeneGraphProps) {
     if (getNodes()?.length != curNodes && getNodes()[0]?.width != null) {
       setCurNodes(getNodes().length)
     }
-    if(getNodes()?.length != 0 && getNodes()[0].position.x!=0 && !isFitted){
+    if (getNodes()?.length != 0 && getNodes()[0].position.x != 0 && !isFitted) {
+      props.toggleLoading(false)
       setTimeout(() => {
         window.requestAnimationFrame(() => {
           fitView({
@@ -105,7 +107,7 @@ export function GeneGraph(props: GeneGraphProps) {
             nodes: getNodes()
           });
         })
-      }, 1);
+      }, 1)
       setFittet(true);
     }
 
@@ -130,6 +132,11 @@ export function GeneGraph(props: GeneGraphProps) {
   // },[isFitted])
 
   useMemo(() => {
+
+    if (props.geneID.length > 0) {
+      props.toggleLoading(true)
+    }
+
     setCurNodes(0);
     (document as any).startViewTransition(() => {
 
