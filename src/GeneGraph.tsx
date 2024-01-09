@@ -92,22 +92,24 @@ export function GeneGraph(props: GeneGraphProps) {
 
 
   useMemo(() => {
-    if (getNodes()?.length != curNodes) {
+    if (getNodes()?.length != curNodes && getNodes()[0]?.width != null) {
       setCurNodes(getNodes().length)
     }
     if(getNodes()?.length != 0 && getNodes()[0].position.x!=0 && !isFitted){
-      window.requestAnimationFrame(() => {
-        fitView({
-          maxZoom: 15,
-          minZoom: 0.1,
-          duration: 5000,
-          nodes: getNodes()
-        });
-      })
+      setTimeout(() => {
+        window.requestAnimationFrame(() => {
+          fitView({
+            maxZoom: 15,
+            minZoom: 0.1,
+            duration: 5000,
+            nodes: getNodes()
+          });
+        })
+      }, 1);
       setFittet(true);
     }
 
-  }, [nodes]);
+  }, [getNodes()]);
 
 
   // useEffect(()=>{
