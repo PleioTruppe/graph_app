@@ -150,7 +150,6 @@ function DefaultCustomNode({ data, selected }) {
                                         <MolViewer entrez_id={nodeId} options={{ layoutShowControls: false }} />
                                     </div>
                                 </ScrollArea>
-                            
                         </Tabs.Panel>
                     )}
                 </Tabs>

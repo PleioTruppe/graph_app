@@ -75,6 +75,9 @@ function MolViewer({ options, entrez_id }: MolViewerProps) {
               ...options,
               layoutShowControls: false,
               layoutIsExpanded: false,
+              layoutShowLog: false,
+              viewportShowExpand: true,
+              viewportShowAnimation: true,
             };
 
             const viewer = await Viewer.create('mol-container', viewerOptions);
@@ -94,6 +97,7 @@ function MolViewer({ options, entrez_id }: MolViewerProps) {
 
     return () => {
       isMountedRef.current = false;
+      viewerRef.current = null;
     };
   }, [options, entrez_id, fetchUniProtId, fetchAlphaFoldData, loadStructure]);
 
