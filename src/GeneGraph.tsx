@@ -98,14 +98,16 @@ export function GeneGraph(props: GeneGraphProps) {
     }
     if (getNodes()?.length != 0 && getNodes()[0].position.x != 0 && !isFitted) {
       props.toggleLoading(false)
-      window.requestAnimationFrame(() => {
-        fitView({
-          maxZoom: 15,
-          minZoom: 0.1,
-          duration: 5000,
-          nodes: getNodes()
-        });
-      })
+      setTimeout(() => {
+        window.requestAnimationFrame(() => {
+          fitView({
+            maxZoom: 15,
+            minZoom: 0.1,
+            duration: 5000,
+            nodes: getNodes()
+          });
+        })
+      }, 1)
       setFittet(true);
     }
 
