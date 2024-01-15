@@ -215,6 +215,7 @@ export function GeneGraph(props: GeneGraphProps) {
   return (
     <div style={{ height: '85vh', width: '100%', display: 'flex' }}>
       <ReactFlow
+        multiSelectionKeyCode="Control"
         nodes={nodes}
         edges={edges}
         nodeTypes={nodeTypes}
