@@ -153,6 +153,7 @@ export function GeneGraph(props: GeneGraphProps) {
               fullname: node.name,
               synonyms: node.synonyms,
               entrezId: node.entrezId,
+              ensemblId: node.symbol == "nan" ? node.symbol : node.id,
               label: node.symbol == "nan" ? node.id : node.symbol,
               summary: node.summary,
             },
@@ -164,7 +165,7 @@ export function GeneGraph(props: GeneGraphProps) {
             onCollapse: coll
           },
           type: "node",
-          selected: true,
+          selected: false,
         }
       }));
 
@@ -219,6 +220,19 @@ export function GeneGraph(props: GeneGraphProps) {
         maxZoom={15}
         minZoom={0.1}
         fitView
+        onPaneClick={(event) => {
+          event.preventDefault();
+
+          // Set all nodes as selected using a Promise
+          Promise.resolve().then(() => {
+            setNodes((prevNodes) =>
+              prevNodes.map((node) => ({
+                ...node,
+                selected: false,
+              }))
+            );
+          });
+        }}
       >
         <Background />
         <Controls />

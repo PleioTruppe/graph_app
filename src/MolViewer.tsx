@@ -13,10 +13,14 @@ function MolViewer({ options, entrez_id }: MolViewerProps) {
   const fetchUniProtId = useCallback(async (entrezId: string) => {
     try {
       const response = await fetch(`https://mygene.info/v3/gene/${entrezId}?fields=uniprot&dotfield=false&size=10`);
+      
+      if (!response.ok) {
+        return null;
+      }
+
       const data = await response.json();
       return data?.uniprot?.['Swiss-Prot'] || null;
     } catch (error) {
-      console.error('Error fetching UniProt ID:', error);
       return null;
     }
   }, []);
@@ -24,10 +28,14 @@ function MolViewer({ options, entrez_id }: MolViewerProps) {
   const fetchAlphaFoldData = useCallback(async (uniProtId: string | null) => {
     try {
       const response = await fetch(`https://alphafold.ebi.ac.uk/api/prediction/${uniProtId}?key=key`);
+      
+      if (!response.ok) {
+        return null;
+      }
+
       const data = await response.json();
       return data?.[0]?.cifUrl || null;
     } catch (error) {
-      console.error('Error fetching AlphaFold data:', error);
       return null;
     }
   }, []);
@@ -36,57 +44,60 @@ function MolViewer({ options, entrez_id }: MolViewerProps) {
     if (isMountedRef.current && cifUrl) {
       try {
         await viewerRef.current?.loadStructureFromUrl(cifUrl);
-        console.log('Structure loaded successfully');
       } catch (error) {
-        console.error('Error loading structure:', error);
+        // Do nothing
       }
     }
   }, []);
 
   useEffect(() => { 
     isMountedRef.current = true;
-  
+
     const initViewer = async () => {
       if (isMountedRef.current) {
         try {
           const molstarContainer = document.getElementById('mol-container');
-  
+
           if (molstarContainer && entrez_id) {
             const uniProtId = await fetchUniProtId(entrez_id);
-            const cifUrl = await fetchAlphaFoldData(uniProtId);
             
-            if (uniProtId && cifUrl) {
-              const viewerOptions: Partial<ViewerOptions> = {
-                ...options,
-                layoutShowControls: false, // Set layoutShowControls to false
-                layoutIsExpanded: false,
-              };
-  
-              const viewer = await Viewer.create('mol-container', viewerOptions);
-              viewerRef.current = viewer;
-  
-              if (viewer) {
-                console.log('Viewer created successfully');
-                console.log('Plugin builders:', viewerRef.current.builders);
-  
-                if (viewerRef.current.plugin.builders.structure) {
-                  await loadStructure(cifUrl);
-                }
-              } else {
-                console.error('Error creating viewer');
-              }
+            if (uniProtId === null) {
+              return;
+            }
+
+            const cifUrl = await fetchAlphaFoldData(uniProtId);
+
+            if (cifUrl === null) {
+              return;
+            }
+
+            const viewerOptions: Partial<ViewerOptions> = {
+              ...options,
+              layoutShowControls: false,
+              layoutIsExpanded: false,
+              layoutShowLog: false,
+              viewportShowExpand: true,
+              viewportShowAnimation: true,
+            };
+
+            const viewer = await Viewer.create('mol-container', viewerOptions);
+            viewerRef.current = viewer;
+
+            if (viewer && viewerRef.current.plugin.builders.structure) {
+              await loadStructure(cifUrl);
             }
           }
         } catch (error) {
-          console.error('Error initializing viewer:', error);
+          // Do nothing
         }
       }
     };
-  
+
     initViewer();
-  
+
     return () => {
       isMountedRef.current = false;
+      viewerRef.current = null;
     };
   }, [options, entrez_id, fetchUniProtId, fetchAlphaFoldData, loadStructure]);
 

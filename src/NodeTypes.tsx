@@ -60,7 +60,7 @@ function DefaultCustomNode({ data, selected }) {
         padding: "14px",
         borderRadius: "8px",
         border: data?.isRoot ? '3px solid #398354' : '',
-        opacity: selected? 1 : 0.5,
+        opacity: selected? 1 : 0.7,
     };
 
     const symbolStyle: React.CSSProperties = {
@@ -103,7 +103,9 @@ function DefaultCustomNode({ data, selected }) {
                     <Tabs.List>
                         <Tabs.Tab rightSection={<InfoOutlinedIcon fontSize='small' />} value="details" > Details</Tabs.Tab>
                         {data?.displayProps.summary != "nan" ? <Tabs.Tab rightSection={<PlagiarismOutlinedIcon fontSize='small'/>} value="summary">Summary</Tabs.Tab> : <></>}
-                        <Tabs.Tab rightSection={<InsightsIcon fontSize='small'/>} value="structure">Structure</Tabs.Tab>
+                        {data?.type === "gene" && (
+                            <Tabs.Tab rightSection={<InsightsIcon fontSize='small'/>} value="structure">Structure</Tabs.Tab>
+                        )}
                     </Tabs.List>
                     <Tabs.Panel value="details" >
                         <ScrollArea>
@@ -141,13 +143,15 @@ function DefaultCustomNode({ data, selected }) {
                             </div>
                         </ScrollArea>
                     </Tabs.Panel>
-                    <Tabs.Panel value="structure">
-                        <ScrollArea>
-                            <div style={{ height: '30vh' }}>
-                                <MolViewer entrez_id={nodeId} options={{ layoutShowControls: false }} />
-                            </div>
-                        </ScrollArea>
-                    </Tabs.Panel>
+                    {data?.type === "gene" && (
+                        <Tabs.Panel value="structure">
+                                <ScrollArea>
+                                    <div style={{ height: '30vh' }}>
+                                        <MolViewer entrez_id={nodeId} options={{ layoutShowControls: false }} />
+                                    </div>
+                                </ScrollArea>
+                        </Tabs.Panel>
+                    )}
                 </Tabs>
             </Popover.Dropdown>
         </Popover>
