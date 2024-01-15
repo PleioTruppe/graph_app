@@ -78,8 +78,14 @@ const symbolStyle: React.CSSProperties = {
 
     const [popoverOpen, setPopoverOpen] = useState(false);
 
-    const openPopover = () => {
-        setPopoverOpen(prev => !prev);
+    const openPopover = (event) => {
+        // Check if the Ctrl key is pressed
+        const isCtrlPressed = event.ctrlKey || event.metaKey;
+    
+        // Only open the popover if Ctrl key is not pressed
+        if (!isCtrlPressed) {
+            setPopoverOpen(true);
+        }
     };
 
     const closePopover = () => {

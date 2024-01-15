@@ -128,14 +128,14 @@ export function SidebarFilterList() {
             localStorage.setItem('expandedNodes', JSON.stringify(nodes));
         };
 
-        const handleNodeSelect = (event, value) => {
-            // setTreeViewExpanded(value)
+        // const handleNodeSelect = (event, value) => {
+        //     // setTreeViewExpanded(value)
 
-            var selected = nodes.filter(node => value.includes(node.data?.label))
+        //     var selected = nodes.filter(node => value.includes(node.data?.label))
 
-            onNodesSelectionChange(reactflow, selected)
+        //     onNodesSelectionChange(reactflow, selected)
 
-        }
+        // }
 
         return (
             <ThemeProvider theme={theme}>
@@ -144,7 +144,7 @@ export function SidebarFilterList() {
                     defaultCollapseIcon={<ExpandMoreIcon />}
                     defaultExpandIcon={<ChevronRightIcon />}
                     selected={treeViewSelection}
-                    onNodeSelect={handleNodeSelect}
+                    // onNodeSelect={handleNodeSelect}
                     onNodeToggle={handleNodeToggle}
                     expanded={treeViewExpanded}
                 >
