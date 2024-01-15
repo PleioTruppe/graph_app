@@ -60,7 +60,7 @@ function DefaultCustomNode({ data, selected }) {
         padding: "14px",
         borderRadius: "8px",
         border: data?.isRoot ? '3px solid #398354' : '',
-        opacity: selected? 1 : 0.5,
+        opacity: selected? 1 : 0.7,
     };
 
     const symbolStyle: React.CSSProperties = {

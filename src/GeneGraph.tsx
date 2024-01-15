@@ -165,7 +165,7 @@ export function GeneGraph(props: GeneGraphProps) {
             onCollapse: coll
           },
           type: "node",
-          selected: true,
+          selected: false,
         }
       }));
 
@@ -228,7 +228,7 @@ export function GeneGraph(props: GeneGraphProps) {
             setNodes((prevNodes) =>
               prevNodes.map((node) => ({
                 ...node,
-                selected: true,
+                selected: false,
               }))
             );
           });
