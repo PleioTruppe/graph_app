@@ -68,6 +68,11 @@ export function GeneGraph(props: GeneGraphProps) {
   // state for the nodes and edges
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+
+  if (props?.geneID?.length == 0 && nodes?.length != 0) {
+    setNodes([]);
+  }
+
   let fixedIds = []
   const { getLayoutedElements } = useLayoutedElements();
   const [curNodes, setCurNodes] = useState(0);
@@ -210,6 +215,7 @@ export function GeneGraph(props: GeneGraphProps) {
   return (
     <div style={{ height: '85vh', width: '100%', display: 'flex' }}>
       <ReactFlow
+        multiSelectionKeyCode="Control"
         nodes={nodes}
         edges={edges}
         nodeTypes={nodeTypes}
@@ -238,9 +244,11 @@ export function GeneGraph(props: GeneGraphProps) {
         <Controls />
         <MiniMap />
       </ReactFlow>
+      <div style={{maxWidth: '25%', minWidth:'25%'}}>
       <NodesContext.Provider value={{ nodes: nodes, setNodes: setNodes }}>
         <SidebarFilterList />
       </NodesContext.Provider>
+      </div>
     </div >
   );
 }

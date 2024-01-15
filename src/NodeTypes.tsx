@@ -12,10 +12,16 @@ import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
 
 
-var color = {   
+var color = {
     "gene": "#4BB268",
     "disease": "#FF964D",
     "drug": "#B42865"
+};
+
+var borderColor = {
+    "gene": "#468c5a",
+    "disease": "#b85d20",
+    "drug": "#85264f"
 };
 
 
@@ -40,18 +46,18 @@ function DefaultCustomNode({ data, selected }) {
 
     }, [isFetching]);
 
-    function onExpandCollapse(){
-        if(collapsed){
+    function onExpandCollapse() {
+        if (collapsed) {
             data?.onExpand(nodeId)
             setCollapsed(false)
         }
-        else{
+        else {
             var realChildren = (data?.children).filter(childId => !data?.parents.includes(childId))
             data?.onCollapse(nodeId, realChildren)
             setCollapsed(true)
         }
     }
-    
+
 
     // style applied for every node
     const nodeStyle = {
@@ -59,24 +65,31 @@ function DefaultCustomNode({ data, selected }) {
         color: "black",
         padding: "14px",
         borderRadius: "8px",
-        border: data?.isRoot ? '3px solid #398354' : '',
-        opacity: selected? 1 : 0.7,
+        border: data?.isRoot || selected ? '3px solid' + borderColor[data?.type] : '',
+        opacity: selected ? 1 : 0.8,
+
     };
 
-    const symbolStyle: React.CSSProperties = {
-        position: 'absolute',
-        top: '-8px',
-        right: '-8px',
-    };
+const symbolStyle: React.CSSProperties = {
+    position: 'absolute',
+    top: '-8px',
+    right: '-8px',
+};
 
     const [popoverOpen, setPopoverOpen] = useState(false);
 
-    const openPopover = () => {
-        setPopoverOpen(prev => !prev);
-      };
-  
+    const openPopover = (event) => {
+        // Check if the Ctrl key is pressed
+        const isCtrlPressed = event.ctrlKey || event.metaKey;
+    
+        // Only open the popover if Ctrl key is not pressed
+        if (!isCtrlPressed) {
+            setPopoverOpen(true);
+        }
+    };
+
     const closePopover = () => {
-      setPopoverOpen(false);
+        setPopoverOpen(false);
     };
 
     const label = data?.isRoot ? <b>{data?.displayProps.label}</b> : data?.displayProps.label
@@ -88,7 +101,7 @@ function DefaultCustomNode({ data, selected }) {
                     <Handle type="source" position={Position.Top} style={{ visibility: "hidden" }} />
                     {label}
                     <Handle type="target" position={Position.Right} style={{ visibility: "hidden" }} />
-                    {data?.isRoot && <div style={symbolStyle}> <SearchIcon  style={{fill: "black" , borderRadius: 100}} /> </div>}
+                    {data?.isRoot && <div style={symbolStyle}> <SearchIcon style={{ fill: "black", borderRadius: 100 }} /> </div>}
                 </div>
             </Popover.Target>
             <Popover.Dropdown>
@@ -97,12 +110,12 @@ function DefaultCustomNode({ data, selected }) {
                     <Button variant="filled" color="gray" fullWidth onClick={() => onNodesVisibilityChange(reactflow, [nodes[nodeIndex]], !nodes[nodeIndex].hidden)}>Hide</Button>
                     <Button onClick={closePopover} color='red'  ><CloseIcon /></Button>
                 </Flex>
-        
+
                 <Space h="md" />
-                <Tabs color="gray" variant="outline" defaultValue="details"> 
+                <Tabs color="gray" variant="outline" defaultValue="details">
                     <Tabs.List>
                         <Tabs.Tab rightSection={<InfoOutlinedIcon fontSize='small' />} value="details" > Details</Tabs.Tab>
-                        {data?.displayProps.summary != "nan" ? <Tabs.Tab rightSection={<PlagiarismOutlinedIcon fontSize='small'/>} value="summary">Summary</Tabs.Tab> : <></>}
+                        {data?.displayProps.summary != "nan" ? <Tabs.Tab rightSection={<PlagiarismOutlinedIcon fontSize='small' />} value="summary">Summary</Tabs.Tab> : <></>}
                         {data?.type === "gene" && (
                             <Tabs.Tab rightSection={<InsightsIcon fontSize='small'/>} value="structure">Structure</Tabs.Tab>
                         )}
@@ -145,11 +158,11 @@ function DefaultCustomNode({ data, selected }) {
                     </Tabs.Panel>
                     {data?.type === "gene" && (
                         <Tabs.Panel value="structure">
-                                <ScrollArea>
-                                    <div style={{ height: '30vh' }}>
-                                        <MolViewer entrez_id={nodeId} options={{ layoutShowControls: false }} />
-                                    </div>
-                                </ScrollArea>
+                            <ScrollArea>
+                                <div style={{ height: '30vh' }}>
+                                    <MolViewer entrez_id={nodeId} options={{ layoutShowControls: false }} />
+                                </div>
+                            </ScrollArea>
                         </Tabs.Panel>
                     )}
                 </Tabs>
