@@ -67,7 +67,7 @@ function DefaultCustomNode({ data, selected }) {
         borderRadius: "8px",
         border: data?.isRoot || selected ? '3px solid' + borderColor[data?.type] : '',
         opacity: selected ? 1 : 0.8,
-        
+
     };
 
 const symbolStyle: React.CSSProperties = {
@@ -76,89 +76,94 @@ const symbolStyle: React.CSSProperties = {
     right: '-8px',
 };
 
-const [popoverOpen, setPopoverOpen] = useState(false);
+    const [popoverOpen, setPopoverOpen] = useState(false);
 
-const openPopover = () => {
-    setPopoverOpen(prev => !prev);
-};
+    const openPopover = () => {
+        setPopoverOpen(prev => !prev);
+    };
 
-const closePopover = () => {
-    setPopoverOpen(false);
-};
+    const closePopover = () => {
+        setPopoverOpen(false);
+    };
 
-const label = data?.isRoot ? <b>{data?.displayProps.label}</b> : data?.displayProps.label
+    const label = data?.isRoot ? <b>{data?.displayProps.label}</b> : data?.displayProps.label
 
-return (
-    <Popover trapFocus shadow="md" width={390} opened={popoverOpen} position="bottom" withinPortal >
-        <Popover.Target>
-            <div style={nodeStyle} onClick={openPopover} >
-                <Handle type="source" position={Position.Top} style={{ visibility: "hidden" }} />
-                {label}
-                <Handle type="target" position={Position.Right} style={{ visibility: "hidden" }} />
-                {data?.isRoot && <div style={symbolStyle}> <SearchIcon style={{ fill: "black", borderRadius: 100 }} /> </div>}
-            </div>
-        </Popover.Target>
-        <Popover.Dropdown>
-            <Flex justify="center" gap="md">
-                <Button variant="filled" color="gray" fullWidth onClick={onExpandCollapse}> {data?.isRoot ? "Collapse" : "Expand"}</Button>
-                <Button variant="filled" color="gray" fullWidth onClick={() => onNodesVisibilityChange(reactflow, [nodes[nodeIndex]], !nodes[nodeIndex].hidden)}>Hide</Button>
-                <Button onClick={closePopover} color='red'  ><CloseIcon /></Button>
-            </Flex>
+    return (
+        <Popover trapFocus shadow="md" width={390} opened={popoverOpen} position="bottom" withinPortal >
+            <Popover.Target>
+                <div style={nodeStyle} onClick={openPopover} >
+                    <Handle type="source" position={Position.Top} style={{ visibility: "hidden" }} />
+                    {label}
+                    <Handle type="target" position={Position.Right} style={{ visibility: "hidden" }} />
+                    {data?.isRoot && <div style={symbolStyle}> <SearchIcon style={{ fill: "black", borderRadius: 100 }} /> </div>}
+                </div>
+            </Popover.Target>
+            <Popover.Dropdown>
+                <Flex justify="center" gap="md">
+                    <Button variant="filled" color="gray" fullWidth onClick={onExpandCollapse}> {data?.isRoot ? "Collapse" : "Expand"}</Button>
+                    <Button variant="filled" color="gray" fullWidth onClick={() => onNodesVisibilityChange(reactflow, [nodes[nodeIndex]], !nodes[nodeIndex].hidden)}>Hide</Button>
+                    <Button onClick={closePopover} color='red'  ><CloseIcon /></Button>
+                </Flex>
 
-            <Space h="md" />
-            <Tabs color="gray" variant="outline" defaultValue="details">
-                <Tabs.List>
-                    <Tabs.Tab rightSection={<InfoOutlinedIcon fontSize='small' />} value="details" > Details</Tabs.Tab>
-                    {data?.displayProps.summary != "nan" ? <Tabs.Tab rightSection={<PlagiarismOutlinedIcon fontSize='small' />} value="summary">Summary</Tabs.Tab> : <></>}
-                    <Tabs.Tab rightSection={<InsightsIcon fontSize='small' />} value="structure">Structure</Tabs.Tab>
-                </Tabs.List>
-                <Tabs.Panel value="details" >
-                    <ScrollArea>
-                        <div style={{ height: '30vh' }}>
-                            {Object.keys(nodeData).map((key: string, index: number) => {
-                                if (nodeData[key] != "nan") {
-                                    if (key === "synonyms") {
-                                        if (nodeData[key].length > 0) {
+                <Space h="md" />
+                <Tabs color="gray" variant="outline" defaultValue="details">
+                    <Tabs.List>
+                        <Tabs.Tab rightSection={<InfoOutlinedIcon fontSize='small' />} value="details" > Details</Tabs.Tab>
+                        {data?.displayProps.summary != "nan" ? <Tabs.Tab rightSection={<PlagiarismOutlinedIcon fontSize='small' />} value="summary">Summary</Tabs.Tab> : <></>}
+                        <Tabs.Tab rightSection={<InsightsIcon fontSize='small' />} value="structure">Structure</Tabs.Tab>
+                        {data?.type === "gene" && (
+                            <Tabs.Tab rightSection={<InsightsIcon fontSize='small'/>} value="structure">Structure</Tabs.Tab>
+                        )}
+                    </Tabs.List>
+                    <Tabs.Panel value="details" >
+                        <ScrollArea>
+                            <div style={{ height: '30vh' }}>
+                                {Object.keys(nodeData).map((key: string, index: number) => {
+                                    if (nodeData[key] != "nan") {
+                                        if (key === "synonyms") {
+                                            if (nodeData[key].length > 0) {
+                                                return (
+                                                    <div key={index}>
+                                                        <Text size="md" fw={700}>{key.charAt(0).toUpperCase() + key.slice(1)}</Text>
+                                                        <Text size="sm">{renderSynonymsWithDashes(nodeData[key])}</Text>
+                                                    </div>
+                                                )
+                                            }
+                                        }
+                                        else if (key != "summary") {
                                             return (
                                                 <div key={index}>
                                                     <Text size="md" fw={700}>{key.charAt(0).toUpperCase() + key.slice(1)}</Text>
-                                                    <Text size="sm">{renderSynonymsWithDashes(nodeData[key])}</Text>
+                                                    <Text size="sm">{nodeData[key]}</Text>
                                                 </div>
-                                            )
+                                            );
                                         }
                                     }
-                                    else if (key != "summary") {
-                                        return (
-                                            <div key={index}>
-                                                <Text size="md" fw={700}>{key.charAt(0).toUpperCase() + key.slice(1)}</Text>
-                                                <Text size="sm">{nodeData[key]}</Text>
-                                            </div>
-                                        );
-                                    }
-                                }
-                            })}
-                        </div>
-                    </ScrollArea>
-                </Tabs.Panel>
-                <Tabs.Panel value="summary">
-                    <ScrollArea>
-                        <div style={{ height: '30vh' }}>
-                            <Text size="sm" fw={700}>Summary</Text>
-                            <Text size="sm">{data?.displayProps.summary}</Text>
-                        </div>
-                    </ScrollArea>
-                </Tabs.Panel>
-                <Tabs.Panel value="structure">
-                    <ScrollArea>
-                        <div style={{ height: '30vh' }}>
-                            <MolViewer entrez_id={nodeId} options={{ layoutShowControls: false }} />
-                        </div>
-                    </ScrollArea>
-                </Tabs.Panel>
-            </Tabs>
-        </Popover.Dropdown>
-    </Popover>
-);
+                                })}
+                            </div>
+                        </ScrollArea>
+                    </Tabs.Panel>
+                    <Tabs.Panel value="summary">
+                        <ScrollArea>
+                            <div style={{ height: '30vh' }}>
+                                <Text size="sm" fw={700}>Summary</Text>
+                                <Text size="sm">{data?.displayProps.summary}</Text>
+                            </div>
+                        </ScrollArea>
+                    </Tabs.Panel>
+                    {data?.type === "gene" && (
+                        <Tabs.Panel value="structure">
+                            <ScrollArea>
+                                <div style={{ height: '30vh' }}>
+                                    <MolViewer entrez_id={nodeId} options={{ layoutShowControls: false }} />
+                                </div>
+                            </ScrollArea>
+                        </Tabs.Panel>
+                    )}
+                </Tabs>
+            </Popover.Dropdown>
+        </Popover>
+    );
 }
 
 function renderSynonymsWithDashes(synonyms) {

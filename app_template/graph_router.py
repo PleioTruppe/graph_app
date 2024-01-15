@@ -211,19 +211,23 @@ def expand(geneIds: list[str] = Query(), fixedGeneIds: list[str] = Query(), limi
     allLayoutedEdges.update(layoutedEdges)
 
     # layouting using the networkx package
-    G = nx.Graph()
-    G.add_nodes_from(allFilteredNodes)
-    G.add_edges_from(allLayoutedEdges)
-    positions = nx.spring_layout(G)
+    # G = nx.Graph()
+    # G.add_nodes_from(allFilteredNodes)
+    # G.add_edges_from(allLayoutedEdges)
+    # positions = nx.spring_layout(G)
 
     allNodesResultList = []
     # TODO vlt gibts bei Dataframe was cooleres
     # add positions to nodes
     for node in allNodesResult.to_dict('records'):
         if len(node) > 0:
+            # node["position"] = {
+            #     "x": positions[node["id"]][0],
+            #     "y": positions[node["id"]][1],
+            # }
             node["position"] = {
-                "x": positions[node["id"]][0],
-                "y": positions[node["id"]][1],
+                "x": 0,
+                "y": 0,
             }
             allNodesResultList.append(node)
 

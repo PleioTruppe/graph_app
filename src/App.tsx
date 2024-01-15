@@ -1,5 +1,5 @@
 
-import { Loader, MultiSelect } from '@mantine/core';
+import { Loader, MultiSelect, LoadingOverlay, Box } from '@mantine/core';
 import React, { useState } from 'react';
 import { useAutocomplete } from './store/store';
 import { GeneGraph } from './GeneGraph';
@@ -10,6 +10,8 @@ export function App() {
   const [selectedValues, setSelectedValues] = useState([]);
   const [search, setSearch] = useState("");
   const [selectedIds, setSelectedIds] = useState([]);
+
+  const [loadingVisible, setLoadingVisible] = useState(false);
 
   const { data: autocompleteData, isFetching } = useAutocomplete({ search });
   const symbolToIdMap = new Map(autocompleteData?.map(item => [(item[0] + ' (' + item[2] + ')'), item[1]])); // makes a id-List for backend
@@ -32,7 +34,7 @@ export function App() {
   }
 
   return (
-    <div style={{height:"95%"}}>
+    <div style={{ height: "95%" }}>
       <MultiSelect
         data={symbolsList || []}
         searchable
@@ -47,7 +49,10 @@ export function App() {
       {/* <GeneGraph geneID={selectedIds} addID={setIds}/> */}
       {/* <LayoutFlow geneID={selectedIds}/> */}
       <ReactFlowProvider>
-        <GeneGraph geneID={selectedIds} setIds={setIds} />
+        <Box pos="relative">
+          <LoadingOverlay visible={loadingVisible} />
+          <GeneGraph geneID={selectedIds} setIds={setIds} toggleLoading={setLoadingVisible} />
+        </Box>
       </ReactFlowProvider>
     </div>
   );

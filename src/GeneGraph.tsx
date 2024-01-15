@@ -8,6 +8,7 @@ import FloatingConnectionLine from './FloatingConnectionLine';
 import { SidebarFilterList } from './SidebarFilterList';
 
 import ELK from 'elkjs/lib/elk.bundled.js';
+import { tree } from 'd3';
 
 
 export const NodesContext = React.createContext(null)
@@ -20,6 +21,7 @@ const edgeTypes = {
 type GeneGraphProps = {
   geneID: string[]; // changed to array
   setIds;
+  toggleLoading;
 };
 
 
@@ -51,6 +53,7 @@ const useLayoutedElements = () => {
       });
 
       setNodes(children as any);
+
     });
   }, []);
 
@@ -71,11 +74,9 @@ export function GeneGraph(props: GeneGraphProps) {
   }
 
   let fixedIds = []
-  if (nodes != undefined && nodes.length != 0) {
-    // let fixedNodes = nodes.filter(node => node.data.children.length == 0 && node.data.parents.length == 0)
-    // fixedIds = fixedNodes.map(({ id }) => id);
-  } const { getLayoutedElements } = useLayoutedElements();
+  const { getLayoutedElements } = useLayoutedElements();
   const [curNodes, setCurNodes] = useState(0);
+  const [isFitted, setFittet] = useState(false);
 
 
 
@@ -88,26 +89,59 @@ export function GeneGraph(props: GeneGraphProps) {
 
   const { getNodes, fitView, getEdges } = useReactFlow();
 
-  useMemo(() => {
-    if (getNodes().length !== 0 && getEdges().length !== 0 && getNodes()?.length != curNodes && getNodes()[0]["width"] != null) {
-      setCurNodes(getNodes().length);
+  useEffect(() => {
+    if (curNodes != 0) {
       getLayoutedElements();
+      setFittet(false);
+    }
+  }, [curNodes]);
+
+
+  useMemo(() => {
+    if (getNodes()?.length != curNodes && getNodes()[0]?.width != null) {
+      setCurNodes(getNodes().length)
+    }
+    if (getNodes()?.length != 0 && getNodes()[0].position.x != 0 && !isFitted) {
+      props.toggleLoading(false)
+      setTimeout(() => {
+        window.requestAnimationFrame(() => {
+          fitView({
+            maxZoom: 15,
+            minZoom: 0.1,
+            duration: 5000,
+            nodes: getNodes()
+          });
+        })
+      }, 1)
+      setFittet(true);
     }
 
-
-    window.requestAnimationFrame(() => {
-      fitView({
-        maxZoom: 20,
-        minZoom: 0.1,
-        duration: 5000,
-        nodes: getNodes()
-      });
-    });
+  }, [getNodes()]);
 
 
-  }, [getNodes().map(node => { node.id })]);
+  // useEffect(()=>{
+  //   console.log("setfitted "+isFitted)
+  //   if(!isFitted){
+  //     console.log("nodes "+getNodes().length)
+  //     window.requestAnimationFrame(() => {
+  //       fitView({
+  //         maxZoom: 15,
+  //         minZoom: 0.1,
+  //         duration: 5000,
+  //         nodes: getNodes()
+  //       });
+  //     });
+  //     console.log("if fittet")
+  //     setFittet(true);
+  //   }
+  // },[isFitted])
 
   useMemo(() => {
+
+    if (props.geneID.length > 0) {
+      props.toggleLoading(true)
+    }
+
     setCurNodes(0);
     (document as any).startViewTransition(() => {
 
@@ -124,6 +158,7 @@ export function GeneGraph(props: GeneGraphProps) {
               fullname: node.name,
               synonyms: node.synonyms,
               entrezId: node.entrezId,
+              ensemblId: node.symbol == "nan" ? node.symbol : node.id,
               label: node.symbol == "nan" ? node.id : node.symbol,
               summary: node.summary,
             },
@@ -135,7 +170,7 @@ export function GeneGraph(props: GeneGraphProps) {
             onCollapse: coll
           },
           type: "node",
-          selected: true,
+          selected: false,
         }
       }));
 
@@ -161,6 +196,7 @@ export function GeneGraph(props: GeneGraphProps) {
 
   function coll(id: string, children: [string]) {
     geneIds = geneIds.filter(geneId => geneId != id)
+    //props.setIds(geneIds)
     let currentNodes = getNodes();
     currentNodes.forEach((child) => {
       child.data.parents = child.data.parents.filter((parent: string) => parent != id)
@@ -186,7 +222,22 @@ export function GeneGraph(props: GeneGraphProps) {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         connectionLineComponent={FloatingConnectionLine}
+        maxZoom={15}
+        minZoom={0.1}
         fitView
+        onPaneClick={(event) => {
+          event.preventDefault();
+
+          // Set all nodes as selected using a Promise
+          Promise.resolve().then(() => {
+            setNodes((prevNodes) =>
+              prevNodes.map((node) => ({
+                ...node,
+                selected: false,
+              }))
+            );
+          });
+        }}
       >
         <Background />
         <Controls />
