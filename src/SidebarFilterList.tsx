@@ -31,13 +31,11 @@ const theme = createTheme({
 
 // component for sidebar with filter area and list of nodes
 export function SidebarFilterList() {
-
-
     // get state of nodes from parent component
     const reactflow = useReactFlow();
     const nodes = reactflow.getNodes();
-    const [nodesSelected, setNodesSelected] = useState(nodes.filter(node => node.selected));
 
+    const [nodesSelected, setNodesSelected] = useState(nodes.filter(node => node.selected));
     const [selectionNodes, setSelectionNodes] = useState(nodes.filter(node => node.selected));
 
     useOnSelectionChange({
@@ -52,14 +50,13 @@ export function SidebarFilterList() {
     const NodeTree = () => {
         const [nodes, setNodes] = useState([]);
 
-
         useEffect(() => {
             setNodes(reactflow.getNodes());
         }, [reactflow])
 
         var globalBool = false;
 
-        // toogle tree Node Categorie -> call hide for all nodes in list
+        // toogle tree Node Category -> call hide for all nodes in list
         const toggleNodeCategory = (type) => {
             var newType = type.slice(0, -1);
 
@@ -71,14 +68,9 @@ export function SidebarFilterList() {
                 return node;
             });
 
-
             setNodes(updatedNodes);
-
             onNodesVisibilityChange(reactflow, updatedNodes.filter(node => node.data.type === newType), globalBool);
         };
-
-
-
 
         // toogle Hidden Nodes
         const toggleNodeVisibility = (nodeId) => {
@@ -98,9 +90,6 @@ export function SidebarFilterList() {
             onNodesVisibilityChange(reactflow, [updatedNode], currentHidden);
         };
 
-        // Übergeben Sie das gesamte Node-Objekt, nicht nur das Label
-
-        console.log(nodes)
         const geneNodeLabels = nodes.filter(node => node.data.type === 'gene');
         const diseaseNodeLabels = nodes.filter(node => node.data.type === 'disease');
         const drugNodeLabels = nodes.filter(node => node.data.type === 'drug');
@@ -109,11 +98,19 @@ export function SidebarFilterList() {
         const types = ["genes", "diseases", "drugs"]
 
         const [treeViewSelection, setTreeViewSelection] = useState(nodesSelected.map(node => node.data?.label + "_treeItem"));
-        const [treeViewExpanded, setTreeViewExpanded] = useState([])
+        const [treeViewExpanded, setTreeViewExpanded] = useState(() => {
+            // load from local stroage after rerender
+            return JSON.parse(localStorage.getItem('expandedNodes') || '[]');
+        });
 
         useEffect(() => {
             setTreeViewSelection(nodesSelected.map(node => node.data?.label))
         }, [nodesSelected])
+
+        const handleNodeToggle = (event, nodes) => {
+            setTreeViewExpanded(nodes);
+            localStorage.setItem('expandedNodes', JSON.stringify(nodes));
+        };
 
         const handleNodeSelect = (event, value) => {
             // setTreeViewExpanded(value)
@@ -122,7 +119,6 @@ export function SidebarFilterList() {
             if (selected.length > 0) {
                 onNodesSelectionChange(reactflow, selected)
             }
-
         }
 
         return (
@@ -133,7 +129,8 @@ export function SidebarFilterList() {
                     defaultExpandIcon={<ChevronRightIcon />}
                     selected={treeViewSelection}
                     onNodeSelect={handleNodeSelect}
-                // expanded={treeViewExpanded}
+                    onNodeToggle={handleNodeToggle}
+                    expanded={treeViewExpanded}
                 >
                     {
                         nodeLists.map((list, index) => {
@@ -163,10 +160,6 @@ export function SidebarFilterList() {
             </ThemeProvider>
         )
     }
-
-
-
-
 
     const scrollHeight = document.getElementById('card')?.clientHeight - 100
 
