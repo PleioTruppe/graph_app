@@ -110,7 +110,6 @@ const symbolStyle: React.CSSProperties = {
                     <Tabs.List>
                         <Tabs.Tab rightSection={<InfoOutlinedIcon fontSize='small' />} value="details" > Details</Tabs.Tab>
                         {data?.displayProps.summary != "nan" ? <Tabs.Tab rightSection={<PlagiarismOutlinedIcon fontSize='small' />} value="summary">Summary</Tabs.Tab> : <></>}
-                        <Tabs.Tab rightSection={<InsightsIcon fontSize='small' />} value="structure">Structure</Tabs.Tab>
                         {data?.type === "gene" && (
                             <Tabs.Tab rightSection={<InsightsIcon fontSize='small'/>} value="structure">Structure</Tabs.Tab>
                         )}
