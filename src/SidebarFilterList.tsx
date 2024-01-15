@@ -46,6 +46,14 @@ export function SidebarFilterList() {
 
     });
 
+    const [search, setSearch] = useState(selectionNodes.map(node => node.data?.label));
+
+    useEffect(() => {
+        if (nodesSelected.length === nodes.length) setSearch([])
+        else {
+            setSearch(nodesSelected.map(node => node.data?.label))
+        }
+    }, [nodesSelected])
 
     const NodeTree = () => {
         const [nodes, setNodes] = useState([]);
@@ -97,14 +105,22 @@ export function SidebarFilterList() {
         const nodeLists = [geneNodeLabels, diseaseNodeLabels, drugNodeLabels]
         const types = ["genes", "diseases", "drugs"]
 
-        const [treeViewSelection, setTreeViewSelection] = useState(nodesSelected.map(node => node.data?.label + "_treeItem"));
+        //const [treeViewSelection, setTreeViewSelection] = useState(nodesSelected.map(node => node.data?.label + "_treeItem"));
+        const [treeViewSelection, setTreeViewSelection] = useState([]);
+
         const [treeViewExpanded, setTreeViewExpanded] = useState(() => {
             // load from local stroage after rerender
             return JSON.parse(localStorage.getItem('expandedNodes') || '[]');
         });
 
         useEffect(() => {
-            setTreeViewSelection(nodesSelected.map(node => node.data?.label))
+            const nodes = reactflow.getNodes();
+            if (nodesSelected.length === nodes.length) {
+                setTreeViewSelection([])
+            }
+            else {
+                setTreeViewSelection(nodesSelected.map(node => node.data?.label))
+            }
         }, [nodesSelected])
 
         const handleNodeToggle = (event, nodes) => {
@@ -116,9 +132,9 @@ export function SidebarFilterList() {
             // setTreeViewExpanded(value)
 
             var selected = nodes.filter(node => value.includes(node.data?.label))
-            if (selected.length > 0) {
-                onNodesSelectionChange(reactflow, selected)
-            }
+
+            onNodesSelectionChange(reactflow, selected)
+
         }
 
         return (
@@ -162,40 +178,43 @@ export function SidebarFilterList() {
 
     const scrollHeight = document.getElementById('card')?.clientHeight - 100
 
-    const handleSelectedChange = (values) => {
+    const handleSearchChange = (values) => {
         var selected = nodes.filter(node => values.includes(node.data?.label))
         onNodesSelectionChange(reactflow, selected)
+        //setSearch(values)
+
+        console.log("Search changed")
     }
 
     const symbolListSearch = nodes.map((node) => { return node.data?.label; });
-    console.log(symbolListSearch)
+
 
     return (
-<div style={{height:'100%', padding: '10px', position: 'relative', left: '0', top: '0', bottom: '0' }}>
-  <Card id='card' withBorder shadow='sm' radius="lg" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-    <Group position="apart" style={{ padding: '6px 4px', width: '100%' }}>
-      <div style={{overflow: 'auto', width: '100%'}}>
+        <div style={{ height: '100%', padding: '10px', position: 'relative', left: '0', top: '0', bottom: '0' }}>
+            <Card id='card' withBorder shadow='sm' radius="lg" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                <Group position="apart" style={{ padding: '6px 4px', width: '100%' }}>
+                    <div style={{ overflow: 'auto', width: '100%' }}>
 
-        <MultiSelect
-          data={symbolListSearch || ["test"] }
-          searchable
-          clearable
-          onChange={handleSelectedChange}
-          placeholder="Search node..."
-          nothingFound="No nodes found"
-          id='searchbarNodes'
-          variant='filled'
-          value={selectionNodes.map(node => node.data?.label)}
-          style={{maxHeight: '2.5EM', height: '100%', zIndex: '100'}}
-        />
+                        <MultiSelect
+                            data={symbolListSearch}
+                            searchable
+                            clearable
+                            onChange={handleSearchChange}
+                            placeholder="Search node..."
+                            nothingFound="No nodes found"
+                            id='searchbarNodes'
+                            variant='filled'
+                            value={search}
+                            style={{ maxHeight: '4EM', height: '100%', zIndex: '100' }}
+                        />
 
-      </div>
-    </Group>
-    <Divider />
-    <ScrollArea h={scrollHeight} offsetScrollbars scrollbarSize={2} style={{ flex: '1' }}>
-      <NodeTree />
-    </ScrollArea>
-  </Card>
-</div>
+                    </div>
+                </Group>
+                <Divider />
+                <ScrollArea h={scrollHeight} offsetScrollbars scrollbarSize={2} style={{ flex: '1' }}>
+                    <NodeTree />
+                </ScrollArea>
+            </Card>
+        </div>
     );
 }
