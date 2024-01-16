@@ -2,7 +2,7 @@ import shownIcon from './images/eye.png'
 import hiddenIcon from './images/eye-closed.png'
 
 export const onNodesVisibilityChange = (reactflow, nodes, visible)=> {
-
+    // update node state
     const updatedNodes = reactflow.getNodes().map((node) => {
 
         if (nodes.some(n => n.id === node.id)) {
@@ -12,16 +12,18 @@ export const onNodesVisibilityChange = (reactflow, nodes, visible)=> {
         return node
     })
 
+    // update edge state
     const updatedEdges = reactflow.getEdges().map((edge) => {
-        
+        // make them visible
         if (visible === true) {
             if ((nodes.some(n => n.id == edge.source) || nodes.some(n => n.id === edge.target))) {
                 return {...edge, hidden: visible}
             }
         } else {
+            // hide edges based on shown nodes
             var leftNode = nodes.some(n => n.id == edge.source);
             var rightNode = nodes.some(n => n.id === edge.target);
-
+            
             if (leftNode && rightNode) {
                 return {...edge, hidden: false}
             } else if (leftNode && !rightNode) {
