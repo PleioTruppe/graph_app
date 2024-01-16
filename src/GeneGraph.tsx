@@ -25,10 +25,12 @@ type GeneGraphProps = {
 };
 
 
+//get elk instance 
 const elk = new ELK();
 
 const useLayoutedElements = () => {
   const { getNodes, setNodes, getEdges, fitView } = useReactFlow();
+  //set parameters for elk
   const defaultOptions = {
     'elk.algorithm': 'org.eclipse.elk.force',
     'elk.layered.spacing.nodeNodeBetweenLayers': 100,
@@ -36,6 +38,7 @@ const useLayoutedElements = () => {
   };
 
   const getLayoutedElements = useCallback(() => {
+    //get nodes and edges from reactflow
     const layoutOptions = { ...defaultOptions };
     const graph = {
       id: 'root',
@@ -44,10 +47,12 @@ const useLayoutedElements = () => {
       edges: getEdges(),
     };
 
+    //layout graph
     elk.layout(graph as any).then(({ children }) => {
 
       // By mutating the children in-place we saves ourselves from creating a
       // needless copy of the nodes array.
+      //settin positions
       children.forEach((node) => {
         (node as any).position = { x: node.x, y: node.y };
       });
@@ -57,6 +62,7 @@ const useLayoutedElements = () => {
     });
   }, []);
 
+  //return callback
   return { getLayoutedElements };
 };
 
@@ -69,10 +75,12 @@ export function GeneGraph(props: GeneGraphProps) {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
+  //reset nodes if none are querried
   if (props?.geneID?.length == 0 && nodes?.length != 0) {
     setNodes([]);
   }
 
+  //set layouting states
   let fixedIds = []
   const { getLayoutedElements } = useLayoutedElements();
   const [curNodes, setCurNodes] = useState(0);
@@ -87,8 +95,9 @@ export function GeneGraph(props: GeneGraphProps) {
     limit: 1000,
   });
 
-  const { getNodes, fitView, getEdges } = useReactFlow();
+  const { getNodes, fitView } = useReactFlow();
 
+  //layout when current nodes change
   useEffect(() => {
     if (curNodes != 0) {
       getLayoutedElements();
@@ -97,10 +106,13 @@ export function GeneGraph(props: GeneGraphProps) {
   }, [curNodes]);
 
 
+  //react to reactflow nodechange
   useMemo(() => {
+    //set current nodes 
     if (getNodes()?.length != curNodes && getNodes()[0]?.width != null) {
       setCurNodes(getNodes().length)
     }
+    //fit if nodes have been layouted -> unfortunatly a timeout is neccessary otherwise it will fit too early
     if (getNodes()?.length != 0 && getNodes()[0].position.x != 0 && !isFitted) {
       props.toggleLoading(false)
       setTimeout(() => {
@@ -119,32 +131,19 @@ export function GeneGraph(props: GeneGraphProps) {
   }, [getNodes()]);
 
 
-  // useEffect(()=>{
-  //   console.log("setfitted "+isFitted)
-  //   if(!isFitted){
-  //     console.log("nodes "+getNodes().length)
-  //     window.requestAnimationFrame(() => {
-  //       fitView({
-  //         maxZoom: 15,
-  //         minZoom: 0.1,
-  //         duration: 5000,
-  //         nodes: getNodes()
-  //       });
-  //     });
-  //     console.log("if fittet")
-  //     setFittet(true);
-  //   }
-  // },[isFitted])
-
   useMemo(() => {
 
+    //set loading status on first execution
     if (props.geneID.length > 0) {
       props.toggleLoading(true)
     }
 
     setCurNodes(0);
+
+    //use viewtransition api
     (document as any).startViewTransition(() => {
 
+      //set nodes with data from backend
       setNodes(graph?.nodes.map((node, index) => {
         return {
           id: node.id,
@@ -174,6 +173,7 @@ export function GeneGraph(props: GeneGraphProps) {
         }
       }));
 
+      //set Edges with data from backend
       setEdges(
         graph?.edges.map((edge) => ({
           id: edge.id,
@@ -187,6 +187,7 @@ export function GeneGraph(props: GeneGraphProps) {
 
   }, [graph]);
 
+  //add id of expanding node to geneids
   function exp(id: string) {
     if (!geneIds.includes(id)) {
       geneIds = ([...geneIds, id])
@@ -194,9 +195,9 @@ export function GeneGraph(props: GeneGraphProps) {
     }
   }
 
+  //collapse function
   function coll(id: string, children: [string]) {
     geneIds = geneIds.filter(geneId => geneId != id)
-    //props.setIds(geneIds)
     let currentNodes = getNodes();
     currentNodes.forEach((child) => {
       child.data.parents = child.data.parents.filter((parent: string) => parent != id)
